@@ -35,9 +35,9 @@ public class EvolutionService {
     }
 
     // Fetch Evolution Chain by Pokémon National ID
-    @Cacheable(value = "EvolutionChain", key = "#pokemonId")
-    public List<EvolutionPhasesDTO> getEvolutionChain(int pokemonId) throws EvolutionNotFoundException {
-        String url = BASE_URL + "pokemon/" + pokemonId;
+    @Cacheable(value = "EvolutionChain", key = "#pokemonIdOrName")
+    public List<EvolutionPhasesDTO> getEvolutionChain(String pokemonIdOrName) throws EvolutionNotFoundException {
+        String url = BASE_URL + "pokemon/" + pokemonIdOrName.toLowerCase();
 
         // Fetching Pokémon data to get evolution chain URL
         PokemonResponse pokemonResponse = restTemplate.getForObject(url, PokemonResponse.class);
@@ -51,17 +51,15 @@ public class EvolutionService {
                 String jsonInString = gson.toJson(evolutionChain);
                 JSONObject evolution_chain = new JSONObject(jsonInString);
                 String EVOLUTION_URL = evolution_chain.getJSONObject("evolution_chain").getString("url");
-                Object chain = restTemplate.getForObject(EVOLUTION_URL, Object.class);
-
+                String chain = restTemplate.getForObject(EVOLUTION_URL, String.class);
                 String prev_state = "";
-                String chainInString = gson.toJson(chain);
-                JSONObject chainJson = new JSONObject(chainInString);
+                JSONObject chainJson = new JSONObject(chain);
                 chainJson = chainJson.getJSONObject("chain");
 
                 getPhases(chainJson, evolutionPhases, prev_state);
 
             }else{
-                throw new EvolutionNotFoundException("Evolution chain not found for this id : " + pokemonId);
+                throw new EvolutionNotFoundException("Evolution chain not found for this id : " + pokemonIdOrName);
             }
         }
 

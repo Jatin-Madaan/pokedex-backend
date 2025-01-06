@@ -41,9 +41,9 @@ public class PokemonController {
         return ResponseEntity.ok(pokemons);
     }
 
-    @GetMapping("/evolution/{id}")
-    public ResponseEntity<List<EvolutionPhasesDTO>> getEvolutionChain(@PathVariable int id) throws InfoNotFoundException, EvolutionNotFoundException {
-        List<EvolutionPhasesDTO> evolutionChain = evolutionService.getEvolutionChain(id);
+    @GetMapping("/evolution/{idOrName}")
+    public ResponseEntity<List<EvolutionPhasesDTO>> getEvolutionChain(@PathVariable String idOrName) throws InfoNotFoundException, EvolutionNotFoundException {
+        List<EvolutionPhasesDTO> evolutionChain = evolutionService.getEvolutionChain(idOrName);
         return ResponseEntity.ok(evolutionChain);
     }
 }
